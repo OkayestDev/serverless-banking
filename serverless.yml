@@ -1,0 +1,34 @@
+# Welcome to serverless. Read the docs
+# https://serverless.com/framework/docs/
+
+# Serverless.yml is the configuration the CLI
+# uses to deploy your code to your provider of choice
+
+# The `service` block is the name of the service
+service: serverless
+
+# The `provider` block defines where your service will be deployed
+provider:
+    name: aws
+    runtime: nodejs12.x
+
+plugins:
+    - serverless-plugin-typescript
+    - serverless-offline
+
+# The `functions` block defines what code to deploy
+functions:
+    assignDefaultCarrierService:
+        handler: src/lambdas/bank.lambda.assignDefaultCarrierService
+        events:
+            - http:
+                  path: bank/assign-default-carrier-service
+                  method: put
+                  cors: true
+    assignPreferredCarrierServiceToDispensary:
+        handler: src/lambdas/bank.lambda.assignPreferredCarrierServiceToDispensary
+        events:
+            - http:
+                  path: bank/assign-preferred-carrier-service-to-dispensary
+                  method: put
+                  cors: true
