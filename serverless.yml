@@ -4,6 +4,9 @@
 # Serverless.yml is the configuration the CLI
 # uses to deploy your code to your provider of choice
 
+org: richardsonakyle95
+app: serverless-app
+
 # The `service` block is the name of the service
 service: serverless
 

@@ -3,18 +3,19 @@
       method: put,
       path: bank/assign-preferred-carrier-service-to-dispensary
   function: assignPreferredCarrierServiceToDispensary
-  request:
-      body:
-          dispensaryId: 'testDispensaryId'
-          carrierServiceId: 'testCarrierServiceId'
-          bank:
-              id: 'testBankId'
-              name: 'test bank'
-          dispensaries:
-              - id: 'testDispensaryId'
-                name: 'test dispensary'
-                preferredCarrierService: null
-          carrierServices:
-              - id: 'testCarrierServiceId'
-                name: 'test carrier service'
-  response: true,
+#   request:
+#       body:
+#           dispensaryId: 'testDispensaryId'
+#           carrierServiceId: 'testCarrierServiceId'
+#           bank:
+#               id: 'testBankId'
+#               name: 'test bank'
+#           dispensaries:
+#               - id: 'testDispensaryId'
+#                 name: 'test dispensary'
+#                 preferredCarrierService: null
+#                 assignedBy: null
+#           carrierServices:
+#               - id: 'testCarrierServiceId'
+#                 name: 'test carrier service'
+#   response: true,

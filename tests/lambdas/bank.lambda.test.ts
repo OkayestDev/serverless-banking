@@ -17,7 +17,7 @@ describe('bank.lambda', () => {
         response = null;
     });
 
-    describe('assignPreferredCarrerServiceToDispensary', () => {
+    describe('assignPreferredCarrierServiceToDispensary', () => {
         it('returns NOT_FOUND and error message when unable to find dispensary', () => {
             const mockState = getMockState();
             mockState.dispensaryId = 'notFoundId';

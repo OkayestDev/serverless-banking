@@ -6,12 +6,6 @@ import { AssignedBy } from '../types';
 import * as errorResponses from '../utils/error-responses.utils';
 import * as stateUtils from '../utils/state.utils';
 
-/**
- * Bank assigning a preferred carrierService to dispensary
- * @param state
- * @param context
- * @param callback
- */
 export const assignPreferredCarrierServiceToDispensary: Handler = (
     state: State,
     context: Context,
