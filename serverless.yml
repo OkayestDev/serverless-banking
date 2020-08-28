@@ -18,6 +18,7 @@ plugins:
 
 # The `functions` block defines what code to deploy
 functions:
+    # Bank
     assignDefaultCarrierService:
         handler: src/lambdas/bank.lambda.assignDefaultCarrierService
         events:
@@ -32,3 +33,18 @@ functions:
                   path: bank/assign-preferred-carrier-service-to-dispensary
                   method: put
                   cors: true
+    # Dispensary
+    assignPreferredCarrierService:
+        handler: src/lambdas/dispensary.lambda.assignPreferredCarrierService
+        events:
+            - http:
+                  path: dispensary/assign-preferred-carrier-service
+                  method: put
+                  cors: true
+    getCarrierService:
+        handler: src/lambdas/dispensary.lambda.getCarrierService
+        events:
+            - http:
+                  path: dispensary/get-carrier-service
+                  method: get
+                  cors: true,

@@ -1,38 +1,16 @@
 import * as bankLambdas from '../../src/lambdas/bank.lambda';
-import { State } from '../../src/interfaces/state.interface';
-import { v4 } from 'uuid';
 import { expect } from 'chai';
 import 'mocha';
 import { NOT_FOUND, OK } from '../../src/constants';
-import type { response } from '../../src/types';
-
-const getMockState = (): State => ({
-    bank: {
-        id: v4(),
-        name: 'test bank',
-        defaultCarrierServiceId: null,
-    },
-    carrierServiceId: '',
-    dispensaryId: '',
-    carrierServices: [
-        {
-            id: v4(),
-            name: 'test carrier service',
-        },
-    ],
-    dispensaries: [
-        {
-            id: v4(),
-            name: 'test dispensary',
-            preferredCarrierServiceId: null,
-        },
-    ],
-});
+import { response, AssignedBy } from '../../src/types';
+import { getMockState } from '../test-utils';
 
 describe('bank.lambda', () => {
     let response: response;
+    let body;
     const callback = (any, testResponse) => {
         response = testResponse;
+        body = JSON.parse(response.body);
     };
 
     beforeEach(() => {
@@ -46,8 +24,6 @@ describe('bank.lambda', () => {
 
             bankLambdas.assignPreferredCarrierServiceToDispensary(mockState, null, callback);
 
-            const body = JSON.parse(response.body);
-
             expect(response).to.not.equal(null);
             expect(response && response.statusCode).to.equal(NOT_FOUND);
             expect(body.message).to.equal('Unable to find dispensary with id notFoundId');
@@ -59,8 +35,6 @@ describe('bank.lambda', () => {
             mockState.carrierServiceId = 'notFoundId';
 
             bankLambdas.assignPreferredCarrierServiceToDispensary(mockState, null, callback);
-
-            const body = JSON.parse(response.body);
 
             expect(response).to.not.equal(null);
             expect(response && response.statusCode).to.equal(NOT_FOUND);
@@ -74,15 +48,36 @@ describe('bank.lambda', () => {
 
             bankLambdas.assignPreferredCarrierServiceToDispensary(mockState, null, callback);
 
-            const body = JSON.parse(response.body);
-
             expect(response).to.not.equal(null);
             expect(response && response.statusCode).to.equal(OK);
             expect(body.state.dispensaries[0].preferredCarrierServiceId).to.equal(
                 mockState.carrierServiceId
             );
+            expect(body.state.dispensaries[0].assignedBy).to.equal(AssignedBy.Bank);
         });
     });
 
-    describe('')
+    describe('assignDefaultCarrierService', () => {
+        it('returns NOT_FOUND and error message when unable to find carrier service', () => {
+            const mockState = getMockState();
+            mockState.carrierServiceId = 'notFoundId';
+
+            bankLambdas.assignDefaultCarrierService(mockState, null, callback);
+
+            expect(response.statusCode).to.equal(NOT_FOUND);
+            expect(body.message).to.equal('Unable to find carrier service with id notFoundId');
+        });
+
+        it("sets bank's defaultCarrierService", () => {
+            const mockState = getMockState();
+            mockState.carrierServiceId = mockState.carrierServices[0].id;
+
+            bankLambdas.assignDefaultCarrierService(mockState, null, callback);
+
+            expect(response.statusCode).to.equal(OK);
+            expect(body.state.bank.defaultCarrierServiceId).to.equal(
+                mockState.carrierServices[0].id
+            );
+        });
+    });
 });

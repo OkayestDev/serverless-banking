@@ -1,9 +1,10 @@
 import { Callback, Context, Handler } from 'aws-lambda';
 import { State } from '../interfaces/state.interface';
-import { Dispensary } from '../interfaces/dispensary.interface';
-import { CarrierService } from '../interfaces/carrier-service.interface';
 import { constructResponse } from '../utils/construct-response.utils';
-import { NOT_FOUND, OK } from '../constants';
+import { OK } from '../constants';
+import { AssignedBy } from '../types';
+import * as errorResponses from '../utils/error-responses.utils';
+import * as stateUtils from '../utils/state.utils';
 
 /**
  * Bank assigning a preferred carrierService to dispensary
@@ -16,33 +17,23 @@ export const assignPreferredCarrierServiceToDispensary: Handler = (
     context: Context,
     callback: Callback
 ) => {
-    const { dispensaryId, carrierServiceId } = state;
+    const { carrierServiceId } = state;
 
-    const dispensary: Dispensary | undefined = state.dispensaries.find(
-        (dispensary: Dispensary) => dispensary.id === dispensaryId
-    );
-
-    const carrierService: CarrierService | undefined = state.carrierServices.find(
-        (carrierService: CarrierService) => carrierService.id === carrierServiceId
-    );
+    const dispensary = stateUtils.getDispensary(state);
+    const carrierService = stateUtils.getCarrierService(state);
 
     if (!dispensary) {
-        const response = constructResponse(NOT_FOUND, {
-            message: `Unable to find dispensary with id ${dispensaryId}`,
-        });
-        callback(null, response);
+        errorResponses.unableToFindDispensary(state, callback);
         return;
     }
 
     if (!carrierService) {
-        const response = constructResponse(NOT_FOUND, {
-            message: `Unable to find carrier service with id ${carrierServiceId}`,
-        });
-        callback(null, response);
+        errorResponses.unableToFindCarrierService(state, callback);
         return;
     }
 
     dispensary.preferredCarrierServiceId = carrierServiceId;
+    dispensary.assignedBy = AssignedBy.Bank;
 
     const response = constructResponse(OK, {
         state,
@@ -50,14 +41,24 @@ export const assignPreferredCarrierServiceToDispensary: Handler = (
     callback(null, response);
 };
 
-/**
- *
- * @note does not override default carrier service if previously set
- */
 export const assignDefaultCarrierService: Handler = (
     state: State,
     context: Context,
     callback: Callback
 ) => {
+    const { bank } = state;
+
+    const carrierService = stateUtils.getCarrierService(state);
+
+    if (!carrierService) {
+        errorResponses.unableToFindCarrierService(state, callback);
+        return;
+    }
+
+    bank.defaultCarrierServiceId = carrierService.id;
+
+    const response = constructResponse(OK, {
+        state,
+    });
     callback(null, response);
 };
