@@ -11,6 +11,8 @@ export const assignPreferredCarrierServiceToDispensary: Handler = (
     context: Context,
     callback: Callback
 ) => {
+    // @todo need middleware to json.decode state from event body
+    console.info({ state });
     const { carrierServiceId } = state;
 
     const dispensary = stateUtils.getDispensary(state);
